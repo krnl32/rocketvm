@@ -1,4 +1,4 @@
-# 16-bit Virtual Machine — Architecture Specification (v0.1)
+~~# 16-bit Virtual Machine — Architecture Specification (v0.1)
 
 ---
 
@@ -150,8 +150,8 @@ IMM8 : 8-bit immediate value (0–255)
 ### 5.1 Data Movement
 
 ```asm
-MOV  RVD, RVS
 MOV  RVD, IMM8
+MOV  RVD, RVS
 ```
 
 ### 5.2 Memory Access
@@ -177,20 +177,20 @@ STORE [RVD], RVS	; MODE=1 → indirect, store RVS → memory[reg[RVD]]
 ### 5.3 Arithmetic / Logic
 
 ```asm
-ADD RVD, RVS      ; RVD = RVD + RVS
 ADD RVD, IMM8     ; RVD = RVD + IMM8
+ADD RVD, RVS      ; RVD = RVD + RVS
 
-SUB RVD, RVS      ; RVD = RVD - RVS
 SUB RVD, IMM8     ; RVD = RVD - IMM8
+SUB RVD, RVS      ; RVD = RVD - RVS
 
-MUL RVD, RVS      ; RVD = RVD * RVS (lower 16 bits kept)
 MUL RVD, IMM8     ; RVD = RVD * IMM8
+MUL RVD, RVS      ; RVD = RVD * RVS (lower 16 bits kept)
 
-DIV RVD, RVS      ; RVD = RVD / RVS (quotient)
 DIV RVD, IMM8     ; RVD = RVD / IMM8
+DIV RVD, RVS      ; RVD = RVD / RVS (quotient)
 
-MOD RVD, RVS      ; RVD = RVD % RVS (remainder)
 MOD RVD, IMM8     ; RVD = RVD % IMM8
+MOD RVD, RVS      ; RVD = RVD % RVS (remainder)
 
 SHL RVD, IMM8     ; RVD = RVD << IMM8
 SHR RVD, IMM8     ; RVD = RVD >> IMM8 (logical)
@@ -273,16 +273,16 @@ POP  RVD
 ; SHL
 ; shift = IMM8 & 0xF
 ; RVD = (RVD << shift) & 0xFFFF
-; RC = last bit shifted out
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
+; RC = last bit shifted out
 
 ; SHR
 ; shift = IMM8 & 0xF
 ; RVD = RVD >> shift
-; RC = last bit shifted out
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
+; RC = last bit shifted out
 
 ; LOAD
 ; address =
@@ -396,4 +396,4 @@ Each instruction follows:
 - No memory-to-memory operations
 - Fixed 16-bit instruction width
 - Immediate = 8-bit
-- Larger values require multiple instructions
+- Larger values require multiple instructions~~

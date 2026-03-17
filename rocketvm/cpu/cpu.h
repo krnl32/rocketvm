@@ -12,7 +12,7 @@
 #define RVM_CPU_FLAG_RC (1u << 2)
 
 #define RVM_CPU_FLAG_SET(cpu, flag) ((cpu)->regs.flags |= (flag))
-#define RVM_CPU_FLAG_CLEAR(cpu, flag) ((cpu)->regs.flags &= ~(flag))
+#define RVM_CPU_FLAG_CLEAR(cpu, flag) ((cpu)->regs.flags &= (uint16_t)(~(uint16_t)(flag)))
 #define RVM_CPU_FLAG_CHECK(cpu, flag) (((cpu)->regs.flags & (flag)) != 0)
 
 typedef enum {
@@ -41,5 +41,6 @@ typedef struct {
 } rvm_cpu_t;
 
 int rvm_cpu_cycle(rvm_cpu_t *cpu);
+void rvm_cpu_dump(rvm_cpu_t *cpu);
 
 #endif

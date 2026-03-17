@@ -1,14 +1,19 @@
 file(GLOB_RECURSE ROCKETVM_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/main.c"
 
-	"${CMAKE_CURRENT_SOURCE_DIR}/arch.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/cpu.h"
-	"${CMAKE_CURRENT_SOURCE_DIR}/cpu.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/memory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/memory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/memory.c"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/utility/logger.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/utility/logger.c"
+
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_data.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_data.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_alu.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_alu.c"
 )
 
 add_executable(${ROCKETVM_TARGET_NAME} ${ROCKETVM_SOURCES})
