@@ -1,6 +1,6 @@
 #define _POSIX_C_SOURCE 200809L
 
-#include "rocketvm/core/logger.h"
+#include "rocketvm/utility/logger.h"
 
 #include <time.h>
 #include <stdio.h>

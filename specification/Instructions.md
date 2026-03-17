@@ -1,0 +1,17 @@
+### Instructions
+- ADD
+- SUB
+- MUL
+- DIV
+- MOD
+- SHL
+- SHR
+- MOV
+- STORE
+- LOAD
+- CALL
+- RET
+- CMP
+- JMP
+- JZ
+- JNZ
