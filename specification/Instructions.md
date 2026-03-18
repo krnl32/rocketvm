@@ -9,10 +9,9 @@
 - MOD
 - SHL
 - SHR
+- CMP
 - JMP
 - JZ
 - JNZ
-- CMP
 - CALL
 - RET
-

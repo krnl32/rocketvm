@@ -205,7 +205,10 @@ MOD RVD, IMM8     ; RVD = RVD % IMM8
 MOD RVD, RVS      ; RVD = RVD % RVS (remainder)
 
 SHL RVD, IMM8     ; RVD = RVD << IMM8
+SHL RVD, RVS      ; RVD = RVD << RVS
+
 SHR RVD, IMM8     ; RVD = RVD >> IMM8 (logical)
+SHR RVD, RVS      ; RVD = RVD >> RVS (logical)
 ```
 
 ---
@@ -224,19 +227,19 @@ SHR RVD, IMM8     ; RVD = RVD >> IMM8 (logical)
 
 ---
 
-### 5.4 Control Flow
+### 5.4 Comparison
+
+```asm
+CMP RVD, IMM8     ; compare RVD with IMM8
+CMP RVD, RVS      ; compare RVD with RVS (sets FLAGS, no writeback)
+```
+
+### 5.5 Control Flow
 
 ```asm
 JMP ADDR12		; unconditional jump to address
 JZ  ADDR12		; jump if RZ == 1
 JNZ ADDR12		; jump if RZ == 0
-```
-
-### 5.5 Comparison
-
-```asm
-CMP RVD, RVS      ; compare RVD with RVS (sets FLAGS, no writeback)
-CMP RVD, IMM8     ; compare RVD with IMM8
 ```
 
 ### 5.6 Stack
@@ -326,14 +329,14 @@ RSP = RSP + 2
 ; RVD = (RVD << shift) & 0xFFFF
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
-; RC = last bit shifted out
+; RC = last bit shifted out Left (MSB)
 
 ; SHR
 ; shift = IMM8 & 0xF
 ; RVD = RVD >> shift
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
-; RC = last bit shifted out
+; RC = last bit shifted out Right (LSB)
 
 ; LOAD
 ; address =

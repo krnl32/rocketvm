@@ -3,6 +3,7 @@
 #include "rocketvm/cpu/cpu_data.h"
 #include "rocketvm/cpu/cpu_mem.h"
 #include "rocketvm/cpu/cpu_alu.h"
+#include "rocketvm/cpu/cpu_ctrlf.h"
 #include "rocketvm/utility/logger.h"
 
 static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr);
@@ -98,6 +99,11 @@ static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr)
 		}
 		case RVM_OP_SHR: {
 			rvm_cpu_exec_shr(cpu, instr);
+			break;
+		}
+
+		case RVM_OP_CMP: {
+			rvm_cpu_exec_cmp(cpu, instr);
 			break;
 		}
 

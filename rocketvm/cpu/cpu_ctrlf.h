@@ -1,0 +1,8 @@
+#ifndef _RVM_CPU_CTRLF_H
+#define _RVM_CPU_CTRLF_H
+
+#include "rocketvm/cpu/cpu.h"
+
+void rvm_cpu_exec_cmp(rvm_cpu_t *cpu, rvm_instr_t instr);
+
+#endif

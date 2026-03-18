@@ -17,6 +17,8 @@ file(GLOB_RECURSE ROCKETVM_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_mem.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_alu.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_alu.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_ctrlf.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_ctrlf.c"
 )
 
 add_executable(${ROCKETVM_TARGET_NAME} ${ROCKETVM_SOURCES})

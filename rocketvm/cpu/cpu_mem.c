@@ -32,12 +32,11 @@ void rvm_cpu_exec_load(rvm_cpu_t *cpu, rvm_instr_t instr)
 
 void rvm_cpu_exec_store(rvm_cpu_t *cpu, rvm_instr_t instr)
 {
-	uint16_t addr;
-	uint16_t value = cpu->regs.rv[instr.reg];
+	uint16_t addr = 0;
 
 	if (instr.mode == RVM_MODE_IMM_OR_ADDR) {
 		addr = instr.operand;
-	} else {
+	} else if (instr.mode == RVM_MODE_REG) {
 		addr = cpu->regs.rv[instr.operand & 0x7];
 	}
 
@@ -56,5 +55,5 @@ void rvm_cpu_exec_store(rvm_cpu_t *cpu, rvm_instr_t instr)
 	// 	return;
 	// }
 
-	rvm_memory_write_uint16(&cpu->mem, addr, value);
+	rvm_memory_write_uint16(&cpu->mem, addr, cpu->regs.rv[instr.reg]);
 }
