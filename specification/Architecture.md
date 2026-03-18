@@ -63,8 +63,6 @@ Byte-addressable
 0xFF00 – 0xFFFF   MMIO                  256 B
 ```
 
----
-
 ### Stack
 
 * Stack grows downward
@@ -82,6 +80,14 @@ memory[RSP] = value
 ```
 value = memory[RSP]
 RSP = RSP + 2
+```
+
+### Frame Pointer (RSB)
+
+```
+RSB is used to:
+- Mark the start of a stack frame
+- Access function arguments and local variables
 ```
 
 ---
@@ -109,7 +115,7 @@ MODE = 1 → OPERAND = RVS (lower 3 bits used)
 
 ```
 MODE = 0 → OPERAND = ADDRESS
-MODE = 1 → OPERAND = REGISTER (lower 3 bits used)
+MODE = 1 → OPERAND = RADDR (lower 3 bits used)
 ```
 
 ---
@@ -117,7 +123,7 @@ MODE = 1 → OPERAND = REGISTER (lower 3 bits used)
 ### Format C — Control Flow
 
 ```
-[ OPCODE (4) | VALUE (12) ]
+[ OPCODE (4) | ADDR (12) ]
 ```
 
 ---
@@ -125,13 +131,17 @@ MODE = 1 → OPERAND = REGISTER (lower 3 bits used)
 ### Field Definitions
 
 ```
-OPCODE : operation selector (16 possible instructions)
+OPCODE (4 bits) : operation selector (16 possible instructions)
 
-REG : destination register
-RVD : destination register
-RVS : source register (or address register)
+REG (3 bits):
+    - ALU / LOAD :  RVD (destination)
+    - STORE      :  RVS (value source)
 
-IMM8 : 8-bit immediate value (0–255)
+OPERAND (8 bits) : Interpreted based on MODE:
+   MODE = 0: OPERAND = IMM8 (8-bit immediate)
+   MODE = 1: OPERAND
+		- RVS (3 bits) for ALU ops
+		- Raddr (address register) for memory ops
 ```
 
 ---
@@ -157,11 +167,13 @@ MOV  RVD, RVS
 ### 5.2 Memory Access
 
 ```asm
+; addr8 -> OPERAND, Raddr -> OPERAND & 0x7 
 LOAD  RVD, [addr8] 	; MODE=0 → direct address, load memory[addr8] → RVD
 LOAD  RVD, [RVS]	; MODE=1 → indirect, load memory[reg[RVS]] → RVD
 
 STORE [addr8], RVS	; MODE=0 → direct address, store RVS → memory[addr8]
-STORE [RVD], RVS	; MODE=1 → indirect, store RVS → memory[reg[RVD]]
+STORE [Raddr], RVS	; MODE=1 → indirect, store RVS → memory[reg[Raddr]]
+
 ```
 
 ---
@@ -227,13 +239,52 @@ CMP RVD, RVS      ; compare RVD with RVS (sets FLAGS, no writeback)
 CMP RVD, IMM8     ; compare RVD with IMM8
 ```
 
-### Stack
+### 5.6 Stack
 
 ```asm
-PUSH RVS
-PUSHI IMM8
-POP  RVD
+; PUSH RVS
+SUB RSP, 2			; make space
+STORE [RSP], RVS	; write value
+
+; POP
+LOAD RVD, [RSP]		; read value
+ADD RSP, 2			; move stack up
 ```
+
+---
+
+### 5.7 Call
+
+```asm
+CALL RVS
+RET
+```
+
+#### CALL RVS
+
+```
+; Example
+MOVI RV1, 0x10
+SHL  RV1, 4
+CALL RV1
+
+; push return address
+RSP = RSP - 2
+memory[RSP] = RIP
+
+; jump to address in register
+RIP = RV[RVS]
+```
+
+#### 5.8 RET
+
+```
+; pop return address
+RIP = memory[RSP]
+RSP = RSP + 2
+```
+
+---
 
 #### Semantics
 
@@ -328,49 +379,6 @@ POP  RVD
 ; POP
 ; LOAD RVD, [RSP]     	; read value
 ; ADD RSP, 2          	; move stack up
-```
-
----
-
-### Calls
-
-```asm
-CALL RVS
-RET
-```
-
-#### CALL RVS
-
-```
-; Example
-MOVI RV1, 0x10
-SHL  RV1, 4
-CALL RV1
-
-; push return address
-RSP = RSP - 2
-memory[RSP] = RIP
-
-; jump to address in register
-RIP = RV[RVS]
-```
-
-#### RET
-
-```
-; pop return address
-RIP = memory[RSP]
-RSP = RSP + 2
-```
-
----
-
-### Frame Pointer (RSB)
-
-```
-RSB is used to:
-- Mark the start of a stack frame
-- Access function arguments and local variables
 ```
 
 ---

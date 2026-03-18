@@ -1,6 +1,7 @@
 #include "rocketvm/cpu/cpu.h"
-#include "rocketvm/cpu/arch.h"
+#include "rocketvm/cpu/cpu_encoder.h"
 #include "rocketvm/cpu/cpu_data.h"
+#include "rocketvm/cpu/cpu_mem.h"
 #include "rocketvm/cpu/cpu_alu.h"
 #include "rocketvm/utility/logger.h"
 
@@ -30,7 +31,7 @@ int rvm_cpu_cycle(rvm_cpu_t *cpu)
 	}
 
 	if (cpu->regs.rip == rip) {
-		cpu->regs.rip += RVM_INSTRUCTION_SIZE;
+		cpu->regs.rip += RVM_CPU_INSTRUCTION_SIZE;
 	}
 
 	return 0;
@@ -62,36 +63,39 @@ static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr)
 			break;
 		}
 
+		case RVM_OP_LOAD: {
+			rvm_cpu_exec_load(cpu, instr);
+			break;
+		}
+		case RVM_OP_STORE: {
+			rvm_cpu_exec_store(cpu, instr);
+			break;
+		}
+
 		case RVM_OP_ADD: {
 			rvm_cpu_exec_add(cpu, instr);
 			break;
 		}
-
 		case RVM_OP_SUB: {
 			rvm_cpu_exec_sub(cpu, instr);
 			break;
 		}
-
 		case RVM_OP_MUL: {
 			rvm_cpu_exec_mul(cpu, instr);
 			break;
 		}
-
 		case RVM_OP_DIV: {
 			rvm_cpu_exec_div(cpu, instr);
 			break;
 		}
-
 		case RVM_OP_MOD: {
 			rvm_cpu_exec_mod(cpu, instr);
 			break;
 		}
-
 		case RVM_OP_SHL: {
 			rvm_cpu_exec_shl(cpu, instr);
 			break;
 		}
-
 		case RVM_OP_SHR: {
 			rvm_cpu_exec_shr(cpu, instr);
 			break;

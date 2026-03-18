@@ -1,4 +1,7 @@
 ### Instructions
+- MOV
+- LOAD
+- STORE
 - ADD
 - SUB
 - MUL
@@ -6,12 +9,10 @@
 - MOD
 - SHL
 - SHR
-- MOV
-- STORE
-- LOAD
-- CALL
-- RET
-- CMP
 - JMP
 - JZ
 - JNZ
+- CMP
+- CALL
+- RET
+

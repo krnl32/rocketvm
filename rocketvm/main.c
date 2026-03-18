@@ -1,6 +1,6 @@
 #include "rocketvm/utility/logger.h"
-#include "rocketvm/cpu/arch.h"
 #include "rocketvm/cpu/cpu.h"
+#include "rocketvm/cpu/cpu_encoder.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -9,9 +9,11 @@ int main(void)
 {
 	rvm_cpu_t cpu = { 0 };
 
-	// rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 10));
-	// rvm_memory_write_uint16(&cpu.mem, 2, rvm_mov_reg(RVM_REG_RV2, RVM_REG_RV0));
+	rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 10));
+	rvm_memory_write_uint16(&cpu.mem, 2, rvm_mov_reg(RVM_REG_RV2, RVM_REG_RV0));
+	rvm_memory_write_uint16(&cpu.mem, 4, rvm_hlt());
 
+	/*
 	rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xFF));
 	rvm_memory_write_uint16(&cpu.mem, 2, rvm_mov_imm(RVM_REG_RV1, 1));
 
@@ -33,6 +35,27 @@ int main(void)
 	rvm_memory_write_uint16(&cpu.mem, 16, rvm_shr_imm(RVM_REG_RV3, 1));
 
 	rvm_memory_write_uint16(&cpu.mem, 18, rvm_hlt());
+	*/
+
+
+	/*
+	// Test Load
+	// rvm_memory_write_uint8(&cpu.mem, 0xa, 0xCD);
+	// rvm_memory_write_uint8(&cpu.mem, 0x14, 0xEF);
+
+	// rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xa));
+	// rvm_memory_write_uint16(&cpu.mem, 2, rvm_load_reg(RVM_REG_RV3, RVM_REG_RV0));
+	// rvm_memory_write_uint16(&cpu.mem, 4, rvm_load_addr(RVM_REG_RV1, 0x14));
+
+	// Test Store
+	// rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xCD));
+	// rvm_memory_write_uint16(&cpu.mem, 2, rvm_store_addr(RVM_REG_RV0, 0xa));
+	//
+	// rvm_memory_write_uint16(&cpu.mem, 4, rvm_mov_imm(RVM_REG_RV1, 0x14));
+	// rvm_memory_write_uint16(&cpu.mem, 6, rvm_store_reg(RVM_REG_RV0, RVM_REG_RV1));
+
+	// rvm_memory_write_uint16(&cpu.mem, 8, rvm_hlt());
+	*/
 
 	while (!cpu.halt) {
 		rvm_cpu_dump(&cpu);
@@ -43,6 +66,9 @@ int main(void)
 			return -1;
 		}
 	}
+
+	// rvm_info("Memory[0xa] = %d\n", rvm_memory_read_uint16(&cpu.mem, 0xa));
+	// rvm_info("Memory[0x14] = %d\n", rvm_memory_read_uint16(&cpu.mem, 0x14));
 
 	return 0;
 }

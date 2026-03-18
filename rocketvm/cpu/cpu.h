@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 #define RVM_CPU_GP_REGISTER_COUNT 8
+#define RVM_CPU_INSTRUCTION_SIZE 2
 
 #define RVM_CPU_FLAG_RZ (1u << 0)
 #define RVM_CPU_FLAG_RN (1u << 1)
@@ -25,6 +26,32 @@ typedef enum {
 	RVM_REG_RV6,
 	RVM_REG_RV7,
 } rvm_reg_t;
+
+typedef enum {
+	RVM_OP_MOV = 0x0,
+	RVM_OP_LOAD = 0x1,
+	RVM_OP_STORE = 0x2,
+	RVM_OP_ADD = 0x3,
+	RVM_OP_SUB = 0x4,
+	RVM_OP_MUL = 0x5,
+	RVM_OP_DIV = 0x6,
+	RVM_OP_MOD = 0x7,
+	RVM_OP_SHL = 0x8,
+	RVM_OP_SHR = 0x9,
+	RVM_OP_HLT = 0xF,
+} rvm_opcode_t;
+
+typedef enum {
+	RVM_MODE_IMM_OR_ADDR,
+	RVM_MODE_REG,
+} rvm_instr_mode_t;
+
+typedef struct {
+	rvm_opcode_t opcode;
+	rvm_reg_t reg;
+	rvm_instr_mode_t mode;
+	uint8_t operand;
+} rvm_instr_t;
 
 typedef struct {
 	uint16_t rv[RVM_CPU_GP_REGISTER_COUNT];
