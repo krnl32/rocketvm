@@ -215,15 +215,24 @@ SHR RVD, RVS      ; RVD = RVD >> RVS (logical)
 
 ### FLAGS Behavior
 
-| Instruction | RZ | RN | RC |
-|-------------|----|----|----|
-| ADD         | ✓  | ✓  | ✓  |
-| SUB         | ✓  | ✓  | ✓  |
-| MUL         | ✓  | ✓  | ✓  |
-| DIV         | ✓  | ✓  | ✓  |
-| MOD         | ✓  | ✓  | ✓  |
-| SHL         | ✓  | ✓  | ✓  |
-| SHR         | ✓  | ✓  | ✓  |
+| Instruction | RZ | RN | RC | RO |
+|-------------|----|----|----|----|
+| ADD         | ✓  | ✓  | ✓  | ✓  |
+| SUB         | ✓  | ✓  | ✓  | ✓  |
+| MUL         | ✓  | ✓  | ✓  | ✓  |
+| DIV         | ✓  | ✓  | ❌  | ❌  |
+| MOD         | ✓  | ✓  | ❌  | ❌  |
+| SHL         | ✓  | ✓  | ✓  | ✓  |
+| SHR         | ✓  | ✓  | ✓  | ❌  |
+| CMP         | ✓  | ✓  | ✓  | ✓  |
+| LOAD        | ❌  | ❌  | ❌  | ❌  |
+| STORE       | ❌  | ❌  | ❌  | ❌  |
+| JMP         | ❌  | ❌  | ❌  | ❌  |
+| JZ/JNZ      | ❌  | ❌  | ❌  | ❌  |
+| CALL        | ❌  | ❌  | ❌  | ❌  |
+| RET         | ❌  | ❌  | ❌  | ❌  |
+| PUSH        | ❌  | ❌  | ❌  | ❌  |
+| POP         | ❌  | ❌  | ❌  | ❌  |
 
 ---
 
@@ -297,39 +306,40 @@ RSP = RSP + 2
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
 ; RC = carry out
+; RO = signed overflow
 
 ; SUB
 ; RVD = RVD - operand
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
 ; RC = borrow
+; RO = signed overflow
 
 ; MUL
 ; RVD = (RVD * operand) & 0xFFFF
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
 ; RC = overflow
+; RO = overflow
 
 ; DIV
 ; if operand == 0 → HALT
 ; RVD = RVD / operand
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
-; RC = 0
 
 ; MOD
 ; if operand == 0 → HALT
 ; RVD = RVD % operand
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
-; RC = 0
 
 ; SHL
 ; shift = IMM8 & 0xF
 ; RVD = (RVD << shift) & 0xFFFF
 ; RZ = (RVD == 0)
 ; RN = MSB of RVD
-; RC = last bit shifted out Left (MSB)
+; RC = last bit shifted out (bit (16 - shift))
 
 ; SHR
 ; shift = IMM8 & 0xF
@@ -347,7 +357,7 @@ RSP = RSP + 2
 ; STORE
 ; address =
 ;   if MODE == 0 → ADDR8
-;   if MODE == 1 → R[RVD]
+;   if MODE == 1 → R[RVS]
 ; memory16[address] = R[RVS]
 
 ; CMP
@@ -355,6 +365,7 @@ RSP = RSP + 2
 ; RZ = (temp == 0)
 ; RN = MSB of temp
 ; RC = borrow
+; RO = signed overflow
 ; RVD unchanged
 
 ; JMP
