@@ -27,3 +27,21 @@ void rvm_cpu_exec_cmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 		RVM_CPU_FLAG_SET(cpu, RVM_CPU_FLAG_RO);
 	}
 }
+
+void rvm_cpu_exec_jmp(rvm_cpu_t *cpu, rvm_instr_t instr)
+{
+	(void)cpu;
+	(void)instr;
+}
+
+void rvm_cpu_exec_jz(rvm_cpu_t *cpu, rvm_instr_t instr)
+{
+	(void)cpu;
+	(void)instr;
+}
+
+void rvm_cpu_exec_jnz(rvm_cpu_t *cpu, rvm_instr_t instr)
+{
+	(void)cpu;
+	(void)instr;
+}

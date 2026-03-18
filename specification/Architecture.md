@@ -362,7 +362,7 @@ RSP = RSP + 2
 
 ; CMP
 ; temp = RVD - operand
-; RZ = (temp == 0)
+; RZ = (temp == 0) (equal)
 ; RN = MSB of temp
 ; RC = borrow
 ; RO = signed overflow

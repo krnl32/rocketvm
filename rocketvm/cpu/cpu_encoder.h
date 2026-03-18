@@ -118,6 +118,16 @@ static inline uint16_t rvm_shr_reg(rvm_reg_t rvd, rvm_reg_t rvs)
 	return rvm_encode(RVM_OP_SHR, rvd, RVM_MODE_REG, (uint8_t)rvs);
 }
 
+static inline uint16_t rvm_cmp_imm(rvm_reg_t rvd, uint8_t imm)
+{
+	return rvm_encode(RVM_OP_CMP, rvd, RVM_MODE_IMM_OR_ADDR, imm);
+}
+
+static inline uint16_t rvm_cmp_reg(rvm_reg_t rvd, rvm_reg_t rvs)
+{
+	return rvm_encode(RVM_OP_CMP, rvd, RVM_MODE_REG, (uint8_t)rvs);
+}
+
 static inline uint16_t rvm_hlt(void)
 {
 	return rvm_encode(RVM_OP_HLT, 0, 0, 0);

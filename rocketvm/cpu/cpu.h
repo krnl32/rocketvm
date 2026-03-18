@@ -77,6 +77,5 @@ typedef struct {
 } rvm_cpu_t;
 
 int rvm_cpu_cycle(rvm_cpu_t *cpu);
-void rvm_cpu_dump(rvm_cpu_t *cpu);
 
 #endif
