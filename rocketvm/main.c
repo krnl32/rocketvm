@@ -8,7 +8,11 @@
 
 int main(void)
 {
-	rvm_cpu_t cpu = { 0 };
+	rvm_cpu_t cpu;
+	if (rvm_cpu_init(&cpu) == -1) {
+		rvm_error("rvm_cpu_init failed");
+		return -11;
+	}
 
 	// rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 10));
 	// rvm_memory_write_uint16(&cpu.mem, 2, rvm_mov_reg(RVM_REG_RV2, RVM_REG_RV0));
@@ -58,6 +62,7 @@ int main(void)
 	*/
 
 	// Test Control flow
+	/*
 	rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xa));
 	rvm_memory_write_uint16(&cpu.mem, 2, rvm_mov_imm(RVM_REG_RV1, 0xb));
 	rvm_memory_write_uint16(&cpu.mem, 4, rvm_mov_imm(RVM_REG_RV2, 14));
@@ -74,6 +79,19 @@ int main(void)
 
 	rvm_memory_write_uint16(&cpu.mem, 14, rvm_mov_imm(RVM_REG_RV3, 0x9)); // i = 12
 	rvm_memory_write_uint16(&cpu.mem, 16, rvm_hlt());
+	*/
+
+	// Test Call
+	// SUBROUTINE
+	rvm_memory_write_uint16(&cpu.mem, 150, rvm_mov_imm(RVM_REG_RV6, 0xDD));
+	rvm_memory_write_uint16(&cpu.mem, 150 + 2, rvm_ret());
+
+	rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xa));
+	rvm_memory_write_uint16(&cpu.mem, 2, rvm_mov_imm(RVM_REG_RV1, 150));
+	rvm_memory_write_uint16(&cpu.mem, 4, rvm_call_reg(RVM_REG_RV1));
+	rvm_memory_write_uint16(&cpu.mem, 6, rvm_mov_imm(RVM_REG_RV5, 0xEE));
+
+	rvm_memory_write_uint16(&cpu.mem, 8, rvm_ret());
 
 	// Test Store
 	// rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xCD));

@@ -132,7 +132,7 @@ static inline uint16_t rvm_cmp_reg(rvm_reg_t rvd, rvm_reg_t rvs)
 static inline uint16_t rvm_jmp_imm(int16_t simm)
 {
 	assert((simm >= -1024 && simm <= 1023) && "rvm_jmp_imm simm out of bounds");
-	return ((uint16_t)(RVM_OP_JMP & 0xF) << 12) | ((uint16_t)RVM_MODE_IMM_OR_ADDR << 11) | ((uint16_t)simm & 0x7FF);
+	return ((uint16_t)(RVM_OP_JMP & 0xF) << 12) | ((uint16_t)RVM_MODE_IMM_OR_ADDR << 11) | (uint16_t)(simm & 0x7FF);
 }
 
 static inline uint16_t rvm_jmp_reg(rvm_reg_t rvd)
@@ -143,7 +143,7 @@ static inline uint16_t rvm_jmp_reg(rvm_reg_t rvd)
 static inline uint16_t rvm_jz_imm(int16_t simm)
 {
 	assert((simm >= -1024 && simm <= 1023) && "rvm_jz_imm simm out of bounds");
-	return ((uint16_t)(RVM_OP_JZ & 0xF) << 12) | ((uint16_t)RVM_MODE_IMM_OR_ADDR << 11) | ((uint16_t)simm & 0x7FF);
+	return ((uint16_t)(RVM_OP_JZ & 0xF) << 12) | ((uint16_t)RVM_MODE_IMM_OR_ADDR << 11) | (uint16_t)(simm & 0x7FF);
 }
 
 static inline uint16_t rvm_jz_reg(rvm_reg_t rvd)
@@ -154,7 +154,7 @@ static inline uint16_t rvm_jz_reg(rvm_reg_t rvd)
 static inline uint16_t rvm_jnz_imm(int16_t simm)
 {
 	assert((simm >= -1024 && simm <= 1023) && "rvm_jnz_imm simm out of bounds");
-	return ((uint16_t)(RVM_OP_JNZ & 0xF) << 12) | ((uint16_t)RVM_MODE_IMM_OR_ADDR << 11) | ((uint16_t)simm & 0x7FF);
+	return ((uint16_t)(RVM_OP_JNZ & 0xF) << 12) | ((uint16_t)RVM_MODE_IMM_OR_ADDR << 11) | (uint16_t)(simm & 0x7FF);
 }
 
 static inline uint16_t rvm_jnz_reg(rvm_reg_t rvd)
@@ -162,9 +162,20 @@ static inline uint16_t rvm_jnz_reg(rvm_reg_t rvd)
 	return ((uint16_t)(RVM_OP_JNZ & 0xF) << 12) | ((uint16_t)RVM_MODE_REG << 11) | (rvd & 0x7);
 }
 
-static inline uint16_t rvm_hlt(void)
+static inline uint16_t rvm_call_imm(int16_t simm)
 {
-	return rvm_encode(RVM_OP_HLT, 0, 0, 0);
+	assert((simm >= -1024 && simm <= 1023) && "rvm_call_imm simm out of bounds");
+	return ((uint16_t)(RVM_OP_CALL & 0xF) << 12) | ((uint16_t)RVM_MODE_IMM_OR_ADDR << 11) | (uint16_t)(simm & 0x7FF);
+}
+
+static inline uint16_t rvm_call_reg(rvm_reg_t rvd)
+{
+	return ((uint16_t)(RVM_OP_CALL & 0xF) << 12) | ((uint16_t)RVM_MODE_REG << 11) | (rvd & 0x7);
+}
+
+static inline uint16_t rvm_ret(void)
+{
+	return (uint16_t)(RVM_OP_RET & 0xF) << 12;
 }
 
 #endif

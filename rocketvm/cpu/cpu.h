@@ -25,7 +25,7 @@ typedef enum {
 	RVM_REG_RV4 = 0x4,
 	RVM_REG_RV5 = 0x5,
 	RVM_REG_RV6 = 0x6,
-	RVM_REG_RV7 = 0x7,
+	RVM_REG_RV7 = 0x7
 } rvm_reg_t;
 
 typedef enum {
@@ -47,12 +47,13 @@ typedef enum {
 	RVM_OP_JZ = 0xC,
 	RVM_OP_JNZ = 0xD,
 
-	RVM_OP_HLT = 0xF,
+	RVM_OP_CALL = 0xE,
+	RVM_OP_RET = 0xF
 } rvm_opcode_t;
 
 typedef enum {
 	RVM_MODE_IMM_OR_ADDR = 0x0,
-	RVM_MODE_REG = 0x1,
+	RVM_MODE_REG = 0x1
 } rvm_instr_mode_t;
 
 typedef struct {
@@ -77,6 +78,7 @@ typedef struct {
 	bool halt;
 } rvm_cpu_t;
 
+int rvm_cpu_init(rvm_cpu_t *cpu);
 int rvm_cpu_cycle(rvm_cpu_t *cpu);
 
 #endif

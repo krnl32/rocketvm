@@ -7,7 +7,16 @@
 #include "rocketvm/cpu/cpu_ctrlf.h"
 #include "rocketvm/utility/logger.h"
 
+#include <string.h>
+
 static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr);
+
+int rvm_cpu_init(rvm_cpu_t *cpu)
+{
+	memset(cpu, 0, sizeof(*cpu));
+	cpu->regs.rsp = RVM_MEMORY_STACK_END;
+	return 0;
+}
 
 int rvm_cpu_cycle(rvm_cpu_t *cpu)
 {
@@ -101,9 +110,12 @@ static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr)
 			break;
 		}
 
-		case RVM_OP_HLT: {
-			rvm_info("rvm_cpu_cycle HALTING....");
-			cpu->halt = true;
+		case RVM_OP_CALL: {
+			rvm_cpu_exec_call(cpu, instr);
+			break;
+		}
+		case RVM_OP_RET: {
+			rvm_cpu_exec_ret(cpu, instr);
 			break;
 		}
 

@@ -56,8 +56,10 @@ const char *rvm_opcode_to_string(rvm_opcode_t opcode)
 			return "JZ";
 		case RVM_OP_JNZ:
 			return "JNZ";
-		case RVM_OP_HLT:
-			return "HLT";
+		case RVM_OP_CALL:
+			return "CALL";
+		case RVM_OP_RET:
+			return "RET";
 		default:
 			return "INVALID";
 	}

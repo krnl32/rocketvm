@@ -32,8 +32,8 @@ void rvm_cpu_exec_cmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 void rvm_cpu_exec_jmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 {
 	uint16_t addr;
-
 	rvm_instr_mode_t mode = (instr.raw >> 11) & 0x1;
+
 	if (mode == RVM_MODE_IMM_OR_ADDR) {
 		uint16_t raw = instr.raw & 0x7FF;
 		int16_t offset = (raw & 0x400) ? (int16_t)(raw | 0xF800) : (int16_t)raw;
@@ -68,4 +68,66 @@ void rvm_cpu_exec_jnz(rvm_cpu_t *cpu, rvm_instr_t instr)
 	if (!RVM_CPU_FLAG_CHECK(cpu, RVM_CPU_FLAG_RZ)) {
 		rvm_cpu_exec_jmp(cpu, instr);
 	}
+}
+
+void rvm_cpu_exec_call(rvm_cpu_t *cpu, rvm_instr_t instr)
+{
+	uint16_t addr;
+	rvm_instr_mode_t mode = (instr.raw >> 11) & 0x1;
+
+	if (mode == RVM_MODE_IMM_OR_ADDR) {
+		uint16_t raw = instr.raw & 0x7FF;
+		int16_t offset = (raw & 0x400) ? (int16_t)(raw | 0xF800) : (int16_t)raw;
+		addr = (uint16_t)(cpu->regs.rip + offset);
+	} else {
+		uint8_t reg = instr.raw & 0x7;
+		addr = cpu->regs.rv[reg];
+	}
+
+	// Validate
+	if (addr > RVM_MEMORY_SIZE - RVM_CPU_INSTRUCTION_SIZE) {
+		rvm_cpu_fault(cpu, "CALL out of bounds", addr);
+		return;
+	}
+
+	if (addr & 1) {
+		rvm_cpu_fault(cpu, "CALL unaligned access", addr);
+		return;
+	}
+
+	if (cpu->regs.rsp < RVM_MEMORY_STACK_START + 2) {
+		rvm_cpu_fault(cpu, "CALL stack overflow", cpu->regs.rsp);
+		return;
+	}
+
+	// Save Return Address
+	cpu->regs.rsp -= 2;
+	rvm_memory_write_uint16(&cpu->mem, cpu->regs.rsp, cpu->regs.rip);
+
+	cpu->regs.rip = addr;
+}
+
+void rvm_cpu_exec_ret(rvm_cpu_t *cpu, rvm_instr_t instr)
+{
+	(void)instr;
+
+	if (cpu->regs.rsp >= RVM_MEMORY_STACK_END) {
+		cpu->halt = true;
+		return;
+	}
+
+	uint16_t addr = rvm_memory_read_uint16(&cpu->mem, cpu->regs.rsp);
+	cpu->regs.rsp += 2;
+
+	if (addr > RVM_MEMORY_SIZE - RVM_CPU_INSTRUCTION_SIZE) {
+		rvm_cpu_fault(cpu, "RET out of bounds", addr);
+		return;
+	}
+
+	if (addr & 1) {
+		rvm_cpu_fault(cpu, "RET unaligned access", addr);
+		return;
+	}
+
+	cpu->regs.rip = addr;
 }

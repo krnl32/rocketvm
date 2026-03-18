@@ -1,4 +1,4 @@
-~~# 16-bit Virtual Machine — Architecture Specification (v0.1)
+# 16-bit Virtual Machine — Architecture Specification (v0.1)
 
 ---
 
@@ -118,7 +118,7 @@ MODE = 1 → OPERAND = RADDR (lower 3 bits used)
 
 ---
 
-### Format C — Control Flow
+### Format C — Control Flow / Call
 
 ```
 [ OPCODE (4) | MODE (1) | OPERAND (11) ]
@@ -274,7 +274,8 @@ ADD RSP, 2			; move stack up
 ### 5.7 Call
 
 ```asm
-CALL RVS
+CALL SIMM11		; MODE=0 -> relative call
+CALL RVD		; MODE=1 -> indirect call
 RET
 ```
 
@@ -418,11 +419,8 @@ Each instruction follows:
 ```
 1. Fetch instruction at RIP
 2. Decode (OPCODE, RVD, RVS, IMM8)
-3. Execute operation
-
-4. Update RIP:
-   - If the instruction modified RIP → do nothing
-   - Else → RIP = RIP + 2
+3. Increment RIP
+4. Execute operation
 ```
 
 ---
@@ -431,5 +429,4 @@ Each instruction follows:
 
 - No memory-to-memory operations
 - Fixed 16-bit instruction width
-- Immediate = 8-bit
-- Larger values require multiple instructions~~
+- Larger values require multiple instructions
