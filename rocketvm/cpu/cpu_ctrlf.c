@@ -31,8 +31,19 @@ void rvm_cpu_exec_cmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 
 void rvm_cpu_exec_jmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 {
-	uint16_t addr = instr.raw & 0x0FFF;
-	if (addr >= RVM_MEMORY_SIZE - 1) {
+	uint16_t addr;
+
+	rvm_instr_mode_t mode = (instr.raw >> 11) & 0x1;
+	if (mode == RVM_MODE_IMM_OR_ADDR) {
+		uint16_t raw = instr.raw & 0x7FF;
+		int16_t offset = (raw & 0x400) ? (int16_t)(raw | 0xF800) : (int16_t)raw;
+		addr = (uint16_t)(cpu->regs.rip + offset);
+	} else {
+		uint8_t reg = instr.raw & 0x7;
+		addr = cpu->regs.rv[reg];
+	}
+
+	if (addr > RVM_MEMORY_SIZE - RVM_CPU_INSTRUCTION_SIZE) {
 		rvm_cpu_fault(cpu, "JMP out of bounds", addr);
 		return;
 	}
@@ -48,35 +59,13 @@ void rvm_cpu_exec_jmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 void rvm_cpu_exec_jz(rvm_cpu_t *cpu, rvm_instr_t instr)
 {
 	if (RVM_CPU_FLAG_CHECK(cpu, RVM_CPU_FLAG_RZ)) {
-		uint16_t addr = instr.raw & 0x0FFF;
-		if (addr >= RVM_MEMORY_SIZE - 1) {
-			rvm_cpu_fault(cpu, "JZ out of bounds", addr);
-			return;
-		}
-
-		if (addr & 1) {
-			rvm_cpu_fault(cpu, "JZ unaligned access", addr);
-			return;
-		}
-
-		cpu->regs.rip = addr;
+		rvm_cpu_exec_jmp(cpu, instr);
 	}
 }
 
 void rvm_cpu_exec_jnz(rvm_cpu_t *cpu, rvm_instr_t instr)
 {
 	if (!RVM_CPU_FLAG_CHECK(cpu, RVM_CPU_FLAG_RZ)) {
-		uint16_t addr = instr.raw & 0x0FFF;
-		if (addr >= RVM_MEMORY_SIZE - 1) {
-			rvm_cpu_fault(cpu, "JNZ out of bounds", addr);
-			return;
-		}
-
-		if (addr & 1) {
-			rvm_cpu_fault(cpu, "JNZ unaligned access", addr);
-			return;
-		}
-
-		cpu->regs.rip = addr;
+		rvm_cpu_exec_jmp(cpu, instr);
 	}
 }

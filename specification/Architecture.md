@@ -111,9 +111,7 @@ MODE = 1 → OPERAND = RVS (lower 3 bits used)
 
 ```
 [ OPCODE (4) | REG (3) | MODE (1) | OPERAND (8) ]
-```
 
-```
 MODE = 0 → OPERAND = ADDRESS
 MODE = 1 → OPERAND = RADDR (lower 3 bits used)
 ```
@@ -123,7 +121,10 @@ MODE = 1 → OPERAND = RADDR (lower 3 bits used)
 ### Format C — Control Flow
 
 ```
-[ OPCODE (4) | ADDR (12) ]
+[ OPCODE (4) | MODE (1) | OPERAND (11) ]
+
+MODE = 0 → OPERAND = SIMM11 (-1024 -> +1023)
+MODE = 1 → OPERAND = RVD (lower 3 bits used)
 ```
 
 ---
@@ -246,9 +247,14 @@ CMP RVD, RVS      ; compare RVD with RVS (sets FLAGS, no writeback)
 ### 5.5 Control Flow
 
 ```asm
-JMP ADDR12		; unconditional jump to address
-JZ  ADDR12		; jump if RZ == 1
-JNZ ADDR12		; jump if RZ == 0
+JMP SIMM11		; MODE=0 -> relative short jump to SIMM11
+JMP RVD			; MODE=1 -> long unconditional jump to RVD
+
+JZ  SIMM11		; jump if RZ == 1, MODE=0 -> relative short jump to SIMM11
+JZ  RVD			; jump if RZ == 1, MODE=1 -> long unconditional jump to RVD
+
+JNZ  SIMM11		; jump if RZ == 0, MODE=0 -> relative short jump to SIMM11
+JNZ  RVD		; jump if RZ == 0, MODE=1 -> long unconditional jump to RVD
 ```
 
 ### 5.6 Stack
@@ -369,13 +375,21 @@ RSP = RSP + 2
 ; RVD unchanged
 
 ; JMP
-; RIP = ADDR12
+; OPERAND =
+;   if MODE == 0 → RIP += SIMM11
+;   if MODE == 1 → RIP =  RVD
 
 ; JZ
-; if RZ == 1 → RIP = ADDR12
+; if RZ == 1
+; OPERAND =
+;   if MODE == 0 → RIP += SIMM11
+;   if MODE == 1 → RIP =  RVD
 
 ; JNZ
-; if RZ == 0 → RIP = ADDR12
+; if RZ == 0
+; OPERAND =
+;   if MODE == 0 → RIP += SIMM11
+;   if MODE == 1 → RIP =  RVD
 
 ; CALL
 ; RSP -= 2

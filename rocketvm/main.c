@@ -60,15 +60,20 @@ int main(void)
 	// Test Control flow
 	rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xa));
 	rvm_memory_write_uint16(&cpu.mem, 2, rvm_mov_imm(RVM_REG_RV1, 0xb));
-	rvm_memory_write_uint16(&cpu.mem, 4, rvm_cmp_imm(RVM_REG_RV0, 0xa));
+	rvm_memory_write_uint16(&cpu.mem, 4, rvm_mov_imm(RVM_REG_RV2, 14));
 
-	rvm_memory_write_uint16(&cpu.mem, 6, rvm_jmp(12));
+	rvm_memory_write_uint16(&cpu.mem, 6, rvm_cmp_imm(RVM_REG_RV0, 0xa));
 
-	rvm_memory_write_uint16(&cpu.mem, 8, rvm_mov_imm(RVM_REG_RV2, 0x5));
+	// rvm_memory_write_uint16(&cpu.mem, 8, rvm_jmp_imm(-2)); // infinite loop
+	// rvm_memory_write_uint16(&cpu.mem, 8, rvm_jmp_imm(0));
+	// rvm_memory_write_uint16(&cpu.mem, 8, rvm_jmp_reg(RVM_REG_RV2));
+	rvm_memory_write_uint16(&cpu.mem, 8, rvm_jnz_reg(RVM_REG_RV2));
+
+	rvm_memory_write_uint16(&cpu.mem, 10, rvm_mov_imm(RVM_REG_RV3, 0x5));
 	rvm_memory_write_uint16(&cpu.mem, 12, rvm_hlt());
 
-	rvm_memory_write_uint16(&cpu.mem, 12, rvm_mov_imm(RVM_REG_RV2, 0x9)); // i = 12
-	rvm_memory_write_uint16(&cpu.mem, 14, rvm_hlt());
+	rvm_memory_write_uint16(&cpu.mem, 14, rvm_mov_imm(RVM_REG_RV3, 0x9)); // i = 12
+	rvm_memory_write_uint16(&cpu.mem, 16, rvm_hlt());
 
 	// Test Store
 	// rvm_memory_write_uint16(&cpu.mem, 0, rvm_mov_imm(RVM_REG_RV0, 0xCD));

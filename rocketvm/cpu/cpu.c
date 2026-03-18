@@ -28,13 +28,11 @@ int rvm_cpu_cycle(rvm_cpu_t *cpu)
 	rvm_instr_dump(instr);
 	rvm_debug("\n");
 
+	cpu->regs.rip += RVM_CPU_INSTRUCTION_SIZE;
+
 	if (rvm_cpu_execute(cpu, instr) == -1) {
 		rvm_error("rvm_cpu_execute failed");
 		return -1;
-	}
-
-	if (cpu->regs.rip == rip) {
-		cpu->regs.rip += RVM_CPU_INSTRUCTION_SIZE;
 	}
 
 	return 0;
