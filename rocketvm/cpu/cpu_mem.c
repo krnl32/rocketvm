@@ -1,11 +1,5 @@
 #include "rocketvm/cpu/cpu_mem.h"
-#include "rocketvm/utility/logger.h"
-
-static inline void rvm_cpu_fault(rvm_cpu_t *cpu, const char *msg, uint16_t addr)
-{
-	rvm_error("%s: 0x%04X", msg, addr);
-	cpu->halt = true;
-}
+#include "rocketvm/cpu/cpu_internal.h"
 
 void rvm_cpu_exec_load(rvm_cpu_t *cpu, rvm_instr_t instr)
 {

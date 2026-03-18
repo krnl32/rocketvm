@@ -11,6 +11,7 @@ static inline uint16_t rvm_encode(rvm_opcode_t opcode, rvm_reg_t reg, rvm_instr_
 static inline rvm_instr_t rvm_decode(uint16_t instr)
 {
 	return (rvm_instr_t){
+		.raw = instr,
 		.opcode = (rvm_opcode_t)((instr >> 12) & 0xF),
 		.reg = (rvm_reg_t)(instr >> 9) & 0x7,
 		.mode = (rvm_instr_mode_t)(instr >> 8) & 0x1,
@@ -126,6 +127,21 @@ static inline uint16_t rvm_cmp_imm(rvm_reg_t rvd, uint8_t imm)
 static inline uint16_t rvm_cmp_reg(rvm_reg_t rvd, rvm_reg_t rvs)
 {
 	return rvm_encode(RVM_OP_CMP, rvd, RVM_MODE_REG, (uint8_t)rvs);
+}
+
+static inline uint16_t rvm_jmp(uint16_t addr)
+{
+	return ((uint16_t)(RVM_OP_JMP & 0xF) << 12) | (addr & 0x0FFF);
+}
+
+static inline uint16_t rvm_jz(uint16_t addr)
+{
+	return ((uint16_t)(RVM_OP_JZ & 0xF) << 12) | (addr & 0x0FFF);
+}
+
+static inline uint16_t rvm_jnz(uint16_t addr)
+{
+	return ((uint16_t)(RVM_OP_JNZ & 0xF) << 12) | (addr & 0x0FFF);
 }
 
 static inline uint16_t rvm_hlt(void)

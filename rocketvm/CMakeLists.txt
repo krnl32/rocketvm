@@ -10,6 +10,7 @@ file(GLOB_RECURSE ROCKETVM_SOURCES
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_internal.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_debug.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_debug.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_encoder.h"

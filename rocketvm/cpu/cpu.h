@@ -56,6 +56,7 @@ typedef enum {
 } rvm_instr_mode_t;
 
 typedef struct {
+	uint16_t raw;
 	rvm_opcode_t opcode;
 	rvm_reg_t reg;
 	rvm_instr_mode_t mode;
