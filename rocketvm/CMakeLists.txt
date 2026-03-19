@@ -1,12 +1,11 @@
 file(GLOB_RECURSE ROCKETVM_SOURCES
-	"${CMAKE_CURRENT_SOURCE_DIR}/main.c"
-
-	"${CMAKE_CURRENT_SOURCE_DIR}/memory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/memory.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/memory.c"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/utility/logger.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/utility/logger.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/utility/io.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/utility/io.c"
 
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu.c"
@@ -22,9 +21,19 @@ file(GLOB_RECURSE ROCKETVM_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_alu.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_ctrlf.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/cpu/cpu_ctrlf.c"
+
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/opcode.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/instruction.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/register.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/utility.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/utility.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/utility/logger.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/utility/logger.c"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/utility/io.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/utility/io.c"
 )
 
-add_executable(${ROCKETVM_TARGET_NAME} ${ROCKETVM_SOURCES})
+add_library(${ROCKETVM_TARGET_NAME} STATIC ${ROCKETVM_SOURCES})
 
 set_compile_options_for_target(${ROCKETVM_TARGET_NAME})
 

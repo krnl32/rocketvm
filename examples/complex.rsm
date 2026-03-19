@@ -1,0 +1,46 @@
+; start
+start:
+	MOV rv0, 10
+	MOV rv1, 0x5	; hex imm
+	MOV rv2, rv0	; reg → reg
+
+	ADD rv0, rv1
+	SUB rv0, 2
+	MUL rv0, rv1
+	DIV rv0, rv1
+	MOD rv0, 3
+
+	SHL rv0, 1
+	SHR rv0, 1
+
+	CMP rv0, rv1
+	JZ equal
+
+	MOV rv3, 1
+	JMP after_cmp
+
+equal:
+	MOV rv3, 0
+
+after_cmp:
+	MOV rv4, 5
+
+loop:
+	SUB rv4, 1
+	CMP rv4, 0
+	JNZ loop
+
+	MOV rv5, 0x100		; addr
+	STORE rv0, rv5		; [rv5] = rv0
+	LOAD rv6, rv5		; rv6 = [rv5]
+
+	; call / ret
+	CALL func
+	JMP end
+
+func:
+	MOV rv7, 42
+	RET
+
+end:
+	RET
