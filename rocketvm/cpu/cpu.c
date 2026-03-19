@@ -1,4 +1,6 @@
 #include "rocketvm/cpu/cpu.h"
+
+#include "cpu_internal.h"
 #include "rocketvm/cpu/cpu_debug.h"
 #include "rocketvm/cpu/cpu_encoder.h"
 #include "rocketvm/cpu/cpu_data.h"
@@ -8,6 +10,30 @@
 #include "rocketvm/utility/logger.h"
 
 #include <string.h>
+
+typedef void (*rvm_cpu_op_handler_t)(rvm_cpu_t *, rvm_instr_t);
+
+static const rvm_cpu_op_handler_t rvm_op_handlers[RVM_CPU_OP_COUNT] = {
+	[RVM_OP_MOV]   = rvm_cpu_exec_mov,
+	[RVM_OP_LOAD]  = rvm_cpu_exec_load,
+	[RVM_OP_STORE] = rvm_cpu_exec_store,
+
+	[RVM_OP_ADD] = rvm_cpu_exec_add,
+	[RVM_OP_SUB] = rvm_cpu_exec_sub,
+	[RVM_OP_MUL] = rvm_cpu_exec_mul,
+	[RVM_OP_DIV] = rvm_cpu_exec_div,
+	[RVM_OP_MOD] = rvm_cpu_exec_mod,
+	[RVM_OP_SHL] = rvm_cpu_exec_shl,
+	[RVM_OP_SHR] = rvm_cpu_exec_shr,
+
+	[RVM_OP_CMP] = rvm_cpu_exec_cmp,
+	[RVM_OP_JMP] = rvm_cpu_exec_jmp,
+	[RVM_OP_JNZ] = rvm_cpu_exec_jnz,
+	[RVM_OP_JZ]  = rvm_cpu_exec_jz,
+
+	[RVM_OP_CALL] = rvm_cpu_exec_call,
+	[RVM_OP_RET]  = rvm_cpu_exec_ret,
+};
 
 static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr);
 
@@ -49,79 +75,17 @@ int rvm_cpu_cycle(rvm_cpu_t *cpu)
 
 static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr)
 {
-	switch (instr.opcode) {
-		case RVM_OP_MOV: {
-			rvm_cpu_exec_mov(cpu, instr);
-			break;
-		}
-
-		case RVM_OP_LOAD: {
-			rvm_cpu_exec_load(cpu, instr);
-			break;
-		}
-		case RVM_OP_STORE: {
-			rvm_cpu_exec_store(cpu, instr);
-			break;
-		}
-
-		case RVM_OP_ADD: {
-			rvm_cpu_exec_add(cpu, instr);
-			break;
-		}
-		case RVM_OP_SUB: {
-			rvm_cpu_exec_sub(cpu, instr);
-			break;
-		}
-		case RVM_OP_MUL: {
-			rvm_cpu_exec_mul(cpu, instr);
-			break;
-		}
-		case RVM_OP_DIV: {
-			rvm_cpu_exec_div(cpu, instr);
-			break;
-		}
-		case RVM_OP_MOD: {
-			rvm_cpu_exec_mod(cpu, instr);
-			break;
-		}
-		case RVM_OP_SHL: {
-			rvm_cpu_exec_shl(cpu, instr);
-			break;
-		}
-		case RVM_OP_SHR: {
-			rvm_cpu_exec_shr(cpu, instr);
-			break;
-		}
-
-		case RVM_OP_CMP: {
-			rvm_cpu_exec_cmp(cpu, instr);
-			break;
-		}
-		case RVM_OP_JMP: {
-			rvm_cpu_exec_jmp(cpu, instr);
-			break;
-		}
-		case RVM_OP_JNZ: {
-			rvm_cpu_exec_jnz(cpu, instr);
-			break;
-		}
-		case RVM_OP_JZ: {
-			rvm_cpu_exec_jz(cpu, instr);
-			break;
-		}
-
-		case RVM_OP_CALL: {
-			rvm_cpu_exec_call(cpu, instr);
-			break;
-		}
-		case RVM_OP_RET: {
-			rvm_cpu_exec_ret(cpu, instr);
-			break;
-		}
-
-		default:
-			break;
+	if (instr.opcode >= RVM_CPU_OP_COUNT) {
+		rvm_cpu_fault(cpu, "Opcode out of range", (uint16_t)instr.opcode);
+		return -1;
 	}
 
+	rvm_cpu_op_handler_t handler = rvm_op_handlers[instr.opcode];
+	if (!handler) {
+		rvm_cpu_fault(cpu, "Invalid Opcode", (uint16_t)instr.opcode);
+		return -1;
+	}
+
+	handler(cpu, instr);
 	return 0;
 }

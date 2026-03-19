@@ -7,6 +7,7 @@
 
 #define RVM_CPU_GP_REGISTER_COUNT 8
 #define RVM_CPU_INSTRUCTION_SIZE 2
+#define RVM_CPU_OP_COUNT 16
 
 #define RVM_CPU_FLAG_RZ (1u << 0)
 #define RVM_CPU_FLAG_RN (1u << 1)
