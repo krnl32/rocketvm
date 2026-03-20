@@ -6,7 +6,7 @@
 
 static void rsm_parser_advance(rsm_parser_t *parser, rsm_lexer_t *lexer);
 static int rsm_parser_parse_opcode(rsm_parser_t *parser, rsm_lexer_t *lexer, rsm_program_t *program);
-static rsm_operand_t rsm_parser_parse_operand(rsm_parser_t *parser);
+static rsm_operand_t rsm_parser_parse_operand(rsm_parser_t *parser, rsm_lexer_t *lexer);
 
 rsm_parser_t *rsm_parser_create(void)
 {
@@ -93,26 +93,93 @@ static int rsm_parser_parse_opcode(rsm_parser_t *parser, rsm_lexer_t *lexer, rsm
 	instr.opcode = parser->token.value.opcode;
 	rsm_parser_advance(parser, lexer);
 
-	if (instr.opcode == RVM_OP_RET) {
-		goto finish;
+	if (instr.opcode != RVM_OP_RET) {
+		// OPR1
+		if (parser->token.type != RSM_TOKEN_NEWLINE && parser->token.type != RSM_TOKEN_EOF) {
+			instr.opr1 = rsm_parser_parse_operand(parser, lexer);
+			if (instr.opr1.type == RSM_OPERAND_INVALID) {
+				return -1;
+			}
+
+			rsm_parser_advance(parser, lexer);
+
+			// OPR2?
+			if (parser->token.type == RSM_TOKEN_COMMA) {
+				rsm_parser_advance(parser, lexer);
+
+				instr.opr2 = rsm_parser_parse_operand(parser, lexer);
+				if (instr.opr2.type == RSM_OPERAND_INVALID) {
+					return -1;
+				}
+
+				rsm_parser_advance(parser, lexer);
+			}
+		}
 	}
 
-	instr.opr1 = rsm_parser_parse_operand(parser);
-	if (instr.opr1.type == RSM_OPERAND_INVALID) {
+	if (parser->token.type != RSM_TOKEN_NEWLINE && parser->token.type != RSM_TOKEN_EOF) {
+		rvm_error("unexpected token after instruction");
 		return -1;
 	}
 
-	rsm_parser_advance(parser, lexer);
+	// RET
+	if (instr.opcode == RVM_OP_RET) {
+		if (instr.opr1.type != RSM_OPERAND_NONE || instr.opr2.type != RSM_OPERAND_NONE) {
+			rvm_error("RET takes no operands");
+			return -1;
+		}
+		goto finish;
+	}
 
-	if (parser->token.type == RSM_TOKEN_COMMA) {
-		rsm_parser_advance(parser, lexer);
+	// LOAD: reg, [mem]
+	if (instr.opcode == RVM_OP_LOAD) {
+		if (instr.opr1.type != RSM_OPERAND_REG || instr.opr2.type != RSM_OPERAND_MEM) {
+			rvm_error("LOAD requires: LOAD reg, [addr]");
+			return -1;
+		}
+	}
 
-		instr.opr2 = rsm_parser_parse_operand(parser);
-		if (instr.opr2.type == RSM_OPERAND_INVALID) {
+	// STORE: [mem], reg
+	if (instr.opcode == RVM_OP_STORE) {
+		if (instr.opr1.type != RSM_OPERAND_MEM || instr.opr2.type != RSM_OPERAND_REG) {
+			rvm_error("STORE requires: STORE [addr], reg");
+			return -1;
+		}
+	}
+
+	// ALU + CMP
+	if (instr.opcode == RVM_OP_ADD || instr.opcode == RVM_OP_SUB || instr.opcode == RVM_OP_MUL || instr.opcode == RVM_OP_DIV || instr.opcode == RVM_OP_MOD || instr.opcode == RVM_OP_SHL || instr.opcode == RVM_OP_SHR ||
+		instr.opcode == RVM_OP_CMP) {
+		if (instr.opr1.type != RSM_OPERAND_REG) {
+			rvm_error("ALU ops require destination register");
 			return -1;
 		}
 
-		rsm_parser_advance(parser, lexer);
+		if (!(instr.opr2.type == RSM_OPERAND_REG || instr.opr2.type == RSM_OPERAND_IMM)) {
+			rvm_error("ALU ops require reg or imm operand");
+			return -1;
+		}
+	}
+
+	// MOV
+	if (instr.opcode == RVM_OP_MOV) {
+		if (instr.opr1.type != RSM_OPERAND_REG || !(instr.opr2.type == RSM_OPERAND_REG || instr.opr2.type == RSM_OPERAND_IMM)) {
+			rvm_error("MOV requires: MOV reg, reg|imm");
+			return -1;
+		}
+	}
+
+	// CONTROL FLOW
+	if (instr.opcode == RVM_OP_JMP || instr.opcode == RVM_OP_JZ || instr.opcode == RVM_OP_JNZ || instr.opcode == RVM_OP_CALL) {
+		if (instr.opr1.type == RSM_OPERAND_NONE) {
+			rvm_error("control flow requires operand");
+			return -1;
+		}
+
+		if (!(instr.opr1.type == RSM_OPERAND_LABEL || instr.opr1.type == RSM_OPERAND_REG || instr.opr1.type == RSM_OPERAND_IMM)) {
+			rvm_error("invalid control flow operand");
+			return -1;
+		}
 	}
 
 finish:
@@ -124,24 +191,62 @@ finish:
 	return 0;
 }
 
-static rsm_operand_t rsm_parser_parse_operand(rsm_parser_t *parser)
+static rsm_operand_t rsm_parser_parse_operand(rsm_parser_t *parser, rsm_lexer_t *lexer)
 {
 	rsm_operand_t operand = { 0 };
+
+	if (parser->token.type == RSM_TOKEN_LBRACKET) {
+		rsm_parser_advance(parser, lexer);
+
+		operand.type = RSM_OPERAND_MEM;
+
+		if (parser->token.type == RSM_TOKEN_NUMBER) {
+			operand.mem_type = RSM_MEM_IMM;
+			operand.value.imm = parser->token.value.number;
+		} else if (parser->token.type == RSM_TOKEN_REG) {
+			operand.mem_type = RSM_MEM_REG;
+			operand.value.reg = parser->token.value.reg;
+		} else if (parser->token.type == RSM_TOKEN_IDENT) {
+			operand.mem_type = RSM_MEM_LABEL;
+			operand.value.label = parser->token.value.ident;
+			operand.label_size = parser->token.size;
+		} else {
+			rvm_error("invalid memory operand");
+			operand.type = RSM_OPERAND_INVALID;
+			return operand;
+		}
+
+		rsm_parser_advance(parser, lexer);
+
+		if (parser->token.type != RSM_TOKEN_RBRACKET) {
+			rvm_error("expected ']'");
+			operand.type = RSM_OPERAND_INVALID;
+			return operand;
+		}
+
+		return operand;
+	}
 
 	if (parser->token.type == RSM_TOKEN_NUMBER) {
 		operand.type = RSM_OPERAND_IMM;
 		operand.value.imm = parser->token.value.number;
-	} else if (parser->token.type == RSM_TOKEN_REG) {
+		return operand;
+	}
+
+	if (parser->token.type == RSM_TOKEN_REG) {
 		operand.type = RSM_OPERAND_REG;
 		operand.value.reg = parser->token.value.reg;
-	} else if (parser->token.type == RSM_TOKEN_IDENT) {
+		return operand;
+	}
+
+	if (parser->token.type == RSM_TOKEN_IDENT) {
 		operand.type = RSM_OPERAND_LABEL;
 		operand.value.label = parser->token.value.ident;
 		operand.label_size = parser->token.size;
-	} else {
-		rvm_error("unexpected operand: %d", parser->token.type);
-		operand.type = RSM_OPERAND_INVALID;
+		return operand;
 	}
 
+	rvm_error("unexpected operand: %d", parser->token.type);
+	operand.type = RSM_OPERAND_INVALID;
 	return operand;
 }

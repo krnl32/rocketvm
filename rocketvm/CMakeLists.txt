@@ -25,8 +25,10 @@ file(GLOB_RECURSE ROCKETVM_SOURCES
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/opcode.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/instruction.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/register.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/encoder.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/utility.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/isa/utility.c"
+
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/utility/logger.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/utility/logger.c"
 	"${CMAKE_CURRENT_SOURCE_DIR}/common/utility/io.h"

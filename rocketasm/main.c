@@ -1,19 +1,32 @@
 #include "rocketasm/lexer.h"
 #include "rocketasm/parser.h"
 #include "rocketasm/program.h"
+#include "rocketasm/encoder.h"
+#include "rocketasm/emitter.h"
 
 #include <rocketvm/common/utility/logger.h>
 #include <rocketvm/common/utility/io.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-int main(void)
+int main(int argc, char **argv)
 {
-	const char *path = "/home//Workspace/rocketvm/examples/simple.rsm";
+	if (argc <= 1) {
+		fprintf(stdout, "Usage: %s <*.rsm>\n", argv[0]);
+		return 0;
+	}
 
-	size_t src_size;
-	char *src = rvm_io_read_file(path, &src_size);
+	const char *rsm_path = argv[1];
+	if (access(rsm_path, R_OK) == -1) {
+		perror(rsm_path);
+		return -1;
+	}
 
-	rsm_lexer_t *lexer = rsm_lexer_create(src, src_size);
+	size_t rsm_size;
+	char *rsm = rvm_io_read_file(rsm_path, &rsm_size);
+
+	rsm_lexer_t *lexer = rsm_lexer_create(rsm, rsm_size);
 	if (!lexer) {
 		rvm_error("rsm_lexer_create failed");
 		return -1;
@@ -36,9 +49,28 @@ int main(void)
 		return -1;
 	}
 
+	if (rsm_resolve_labels(program) == -1) {
+		rvm_error("rsm_resolver_resolve_labels failed");
+		return -1;
+	}
+
+#ifdef DEBUG
+	printf("\n");
 	rsm_program_dump_instrs(program);
 	printf("\n");
 	rsm_program_dump_labels(program);
+	printf("\n");
+#endif
+
+	if (rsm_emit_binary(program, "out.rvm") == -1) {
+		rvm_error("rsm_emit_binary failed");
+		return -1;
+	}
+
+	rsm_program_destroy(program);
+	rsm_parser_destroy(parser);
+	rsm_lexer_destroy(lexer);
+	free(rsm);
 
 	return 0;
 }

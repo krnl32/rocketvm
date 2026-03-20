@@ -15,6 +15,8 @@ typedef enum {
 	RSM_TOKEN_NUMBER,
 	RSM_TOKEN_COMMA,
 	RSM_TOKEN_COLON,
+	RSM_TOKEN_LBRACKET,
+	RSM_TOKEN_RBRACKET,
 	RSM_TOKEN_NEWLINE,
 	RSM_TOKEN_EOF,
 } rsm_token_type_t;
@@ -32,12 +34,12 @@ typedef struct {
 } rsm_token_t;
 
 typedef struct {
-	char *src;
+	const char *src;
 	size_t size;
 	size_t pos;
 } rsm_lexer_t;
 
-rsm_lexer_t *rsm_lexer_create(char *src, size_t size);
+rsm_lexer_t *rsm_lexer_create(const char *src, size_t size);
 void rsm_lexer_destroy(rsm_lexer_t *lexer);
 rsm_token_t rsm_lexer_tokenize(rsm_lexer_t *lexer);
 

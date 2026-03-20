@@ -83,6 +83,17 @@ int rsm_program_push_label(rsm_program_t *prog, rsm_label_t label)
 	return 0;
 }
 
+int rsm_program_find_label_address(const rsm_program_t *prog, const char *name, size_t name_len)
+{
+	for (size_t i = 0; i < prog->label_count; i++) {
+		if (prog->labels[i].name_len == name_len && !strncmp(prog->labels[i].name, name, name_len)) {
+			return prog->labels[i].address;
+		}
+	}
+
+	return -1;
+}
+
 void rsm_program_dump_instrs(const rsm_program_t *prog)
 {
 	printf("=== PROGRAM INSTRUCTIONS (%zu) ===\n", prog->instr_count);
@@ -119,25 +130,56 @@ void rsm_program_dump_labels(const rsm_program_t *prog)
 static void rsm_dump_operand(const rsm_operand_t *op)
 {
 	switch (op->type) {
-		case RSM_OPERAND_NONE:
+		case RSM_OPERAND_NONE: {
 			printf("none");
 			break;
+		}
 
-		case RSM_OPERAND_IMM:
+		case RSM_OPERAND_IMM: {
 			printf("%d", op->value.imm);
 			break;
+		}
 
-		case RSM_OPERAND_REG:
+		case RSM_OPERAND_REG: {
 			printf("%s", rvm_reg_to_string(op->value.reg));
 			break;
+		}
 
-		case RSM_OPERAND_LABEL:
+		case RSM_OPERAND_LABEL: {
 			printf("%.*s", (int)op->label_size, op->value.label);
 			break;
+		}
+
+		case RSM_OPERAND_MEM: {
+			printf("[");
+
+			switch (op->mem_type) {
+				case RSM_MEM_IMM:
+					printf("%d", op->value.imm);
+					break;
+
+				case RSM_MEM_REG:
+					printf("%s", rvm_reg_to_string(op->value.reg));
+					break;
+
+				case RSM_MEM_LABEL:
+					printf("%.*s", (int)op->label_size, op->value.label);
+					break;
+
+				case RSM_MEM_NONE:
+				default:
+					printf("?");
+					break;
+			}
+
+			printf("]");
+			break;
+		}
 
 		case RSM_OPERAND_INVALID:
-		default:
+		default: {
 			printf("invalid");
 			break;
+		}
 	}
 }

@@ -30,9 +30,13 @@ loop:
 	CMP rv4, 0
 	JNZ loop
 
-	MOV rv5, 0x100		; addr
-	STORE rv0, rv5		; [rv5] = rv0
-	LOAD rv6, rv5		; rv6 = [rv5]
+	MOV rv0, 0x100 ; addr
+	MOV rv1, 10 ; value
+
+	LOAD rv2, [0x10] 	; rv2 = [0x10]
+	LOAD rv3, [rv0] 	; rv3 = [0x100]
+	STORE [0x20], rv1 	; [0x20] = 10
+	STORE [rv0], rv1 	; [0x100] = 10
 
 	; call / ret
 	CALL func

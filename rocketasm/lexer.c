@@ -17,7 +17,7 @@ static inline char rsm_tolower(char ch)
 static rvm_opcode_t rsm_lexer_tokenize_opcode(const char *str, size_t n);
 static rvm_reg_t rsm_lexer_tokenize_reg(const char *str, size_t n);
 
-rsm_lexer_t *rsm_lexer_create(char *src, size_t size)
+rsm_lexer_t *rsm_lexer_create(const char *src, size_t size)
 {
 	rsm_lexer_t *lexer = malloc(sizeof(*lexer));
 	if (!lexer) {
@@ -34,7 +34,6 @@ rsm_lexer_t *rsm_lexer_create(char *src, size_t size)
 void rsm_lexer_destroy(rsm_lexer_t *lexer)
 {
 	if (lexer) {
-		free(lexer->src);
 		free(lexer);
 	}
 }
@@ -70,6 +69,14 @@ rsm_token_t rsm_lexer_tokenize(rsm_lexer_t *lexer)
 	if (ch == ':') {
 		lexer->pos++;
 		return (rsm_token_t){ .type = RSM_TOKEN_COLON, .size = 1 };
+	}
+	if (ch == '[') {
+		lexer->pos++;
+		return (rsm_token_t){ .type = RSM_TOKEN_LBRACKET, .size = 1 };
+	}
+	if (ch == ']') {
+		lexer->pos++;
+		return (rsm_token_t){ .type = RSM_TOKEN_RBRACKET, .size = 1 };
 	}
 	if (ch == '\n') {
 		lexer->pos++;
@@ -155,6 +162,14 @@ void rsm_lexer_dump_token(const rsm_token_t *token)
 			rvm_info("Token: COLON");
 			break;
 		}
+		case RSM_TOKEN_LBRACKET: {
+			rvm_info("Token: LBRACKET");
+			break;
+		}
+		case RSM_TOKEN_RBRACKET: {
+			rvm_info("Token: RBRACKET");
+			break;
+		}
 		case RSM_TOKEN_NEWLINE: {
 			rvm_info("Token: NEWLINE");
 			break;
@@ -191,6 +206,12 @@ const char *rsm_token_type_to_string(rsm_token_type_t type)
 		}
 		case RSM_TOKEN_COLON: {
 			return "COLON";
+		}
+		case RSM_TOKEN_LBRACKET: {
+			return "LBRACKET";
+		}
+		case RSM_TOKEN_RBRACKET: {
+			return "RBRACKET";
 		}
 		case RSM_TOKEN_NEWLINE: {
 			return "NEWLINE";
