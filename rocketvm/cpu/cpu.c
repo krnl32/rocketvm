@@ -1,13 +1,12 @@
 #include "rocketvm/cpu/cpu.h"
-
-#include "cpu_internal.h"
+#include "rocketvm/cpu/cpu_internal.h"
 #include "rocketvm/cpu/cpu_debug.h"
-#include "rocketvm/cpu/cpu_encoder.h"
 #include "rocketvm/cpu/cpu_data.h"
 #include "rocketvm/cpu/cpu_mem.h"
 #include "rocketvm/cpu/cpu_alu.h"
 #include "rocketvm/cpu/cpu_ctrlf.h"
-#include "rocketvm/utility/logger.h"
+#include "rocketvm/common/isa/encoder.h"
+#include "rocketvm/common/utility/logger.h"
 
 #include <string.h>
 

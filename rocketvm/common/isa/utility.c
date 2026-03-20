@@ -63,3 +63,15 @@ const char *rvm_reg_to_string(rvm_reg_t reg)
 			return "INVALID_REG";
 	}
 }
+
+const char *rvm_instr_mode_to_string(rvm_instr_mode_t mode)
+{
+	switch (mode) {
+		case RVM_MODE_IMM_OR_ADDR:
+			return "IMM_OR_ADDR";
+		case RVM_MODE_REG:
+			return "REG";
+		default:
+			return "INVALID";
+	}
+}

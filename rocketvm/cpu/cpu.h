@@ -1,6 +1,8 @@
-#ifndef _RVM_CPU_H
-#define _RVM_CPU_H
+#ifndef RVM_CPU_H
+#define RVM_CPU_H
 
+#include "rocketvm/common/isa/instruction.h"
+#include "rocketvm/common/isa/register.h"
 #include "rocketvm/memory.h"
 
 #include <stdbool.h>
@@ -17,53 +19,6 @@
 #define RVM_CPU_FLAG_SET(cpu, flag) ((cpu)->regs.flags |= (flag))
 #define RVM_CPU_FLAG_CLEAR(cpu, flag) ((cpu)->regs.flags &= (uint16_t)(~(uint16_t)(flag)))
 #define RVM_CPU_FLAG_CHECK(cpu, flag) (((cpu)->regs.flags & (flag)) != 0)
-
-typedef enum {
-	RVM_REG_RV0 = 0x0,
-	RVM_REG_RV1 = 0x1,
-	RVM_REG_RV2 = 0x2,
-	RVM_REG_RV3 = 0x3,
-	RVM_REG_RV4 = 0x4,
-	RVM_REG_RV5 = 0x5,
-	RVM_REG_RV6 = 0x6,
-	RVM_REG_RV7 = 0x7
-} rvm_reg_t;
-
-typedef enum {
-	RVM_OP_MOV = 0x0,
-
-	RVM_OP_LOAD = 0x1,
-	RVM_OP_STORE = 0x2,
-
-	RVM_OP_ADD = 0x3,
-	RVM_OP_SUB = 0x4,
-	RVM_OP_MUL = 0x5,
-	RVM_OP_DIV = 0x6,
-	RVM_OP_MOD = 0x7,
-	RVM_OP_SHL = 0x8,
-	RVM_OP_SHR = 0x9,
-
-	RVM_OP_CMP = 0xA,
-	RVM_OP_JMP = 0xB,
-	RVM_OP_JZ = 0xC,
-	RVM_OP_JNZ = 0xD,
-
-	RVM_OP_CALL = 0xE,
-	RVM_OP_RET = 0xF
-} rvm_opcode_t;
-
-typedef enum {
-	RVM_MODE_IMM_OR_ADDR = 0x0,
-	RVM_MODE_REG = 0x1
-} rvm_instr_mode_t;
-
-typedef struct {
-	uint16_t raw;
-	rvm_opcode_t opcode;
-	rvm_reg_t reg;
-	rvm_instr_mode_t mode;
-	uint8_t operand;
-} rvm_instr_t;
 
 typedef struct {
 	uint16_t rv[RVM_CPU_GP_REGISTER_COUNT];

@@ -1,5 +1,5 @@
-#ifndef _RVM_CPU_MEM_H
-#define _RVM_CPU_MEM_H
+#ifndef RVM_CPU_MEM_H
+#define RVM_CPU_MEM_H
 
 #include "rocketvm/cpu/cpu.h"
 

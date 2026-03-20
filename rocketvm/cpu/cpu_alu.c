@@ -1,5 +1,5 @@
 #include "rocketvm/cpu/cpu_alu.h"
-#include "rocketvm/utility/logger.h"
+#include "rocketvm/common/utility/logger.h"
 
 void rvm_cpu_exec_add(rvm_cpu_t *cpu, rvm_instr_t instr)
 {

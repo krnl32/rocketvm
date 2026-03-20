@@ -1,5 +1,5 @@
-#ifndef _RVM_CPU_CTRLF_H
-#define _RVM_CPU_CTRLF_H
+#ifndef RVM_CPU_CTRLF_H
+#define RVM_CPU_CTRLF_H
 
 #include "rocketvm/cpu/cpu.h"
 

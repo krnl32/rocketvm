@@ -1,5 +1,5 @@
-#ifndef _RVM_MEMORY_H
-#define _RVM_MEMORY_H
+#ifndef RVM_MEMORY_H
+#define RVM_MEMORY_H
 
 #include <stdint.h>
 #include <assert.h>

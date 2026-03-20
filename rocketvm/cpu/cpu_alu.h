@@ -1,5 +1,5 @@
-#ifndef _RVM_CPU_ALU_H
-#define _RVM_CPU_ALU_H
+#ifndef RVM_CPU_ALU_H
+#define RVM_CPU_ALU_H
 
 #include "rocketvm/cpu/cpu.h"
 
