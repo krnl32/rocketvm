@@ -36,7 +36,7 @@ int rsm_resolve_label(const rsm_program_t *program, const rsm_operand_t *opr, si
 		return -1;
 	}
 
-	return addr - (int)instr_idx - 1;
+	return (addr - (int)instr_idx - 1) * 2;
 }
 
 int rsm_encode_instr(const rsm_program_t *program, const rsm_instr_t *instr, size_t instr_idx)

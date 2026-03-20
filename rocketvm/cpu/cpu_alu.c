@@ -1,8 +1,10 @@
 #include "rocketvm/cpu/cpu_alu.h"
 #include "rocketvm/common/utility/logger.h"
 
-void rvm_cpu_exec_add(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_add(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint16_t dst = cpu->regs.rv[instr.reg];
 	uint16_t src = (instr.mode == RVM_MODE_IMM_OR_ADDR) ? instr.operand : cpu->regs.rv[instr.operand & 0x7];
 	uint32_t result = dst + src;
@@ -30,8 +32,10 @@ void rvm_cpu_exec_add(rvm_cpu_t *cpu, rvm_instr_t instr)
 	cpu->regs.rv[instr.reg] = (uint16_t)result;
 }
 
-void rvm_cpu_exec_sub(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_sub(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint16_t dst = cpu->regs.rv[instr.reg];
 	uint16_t src = (instr.mode == RVM_MODE_IMM_OR_ADDR) ? instr.operand : cpu->regs.rv[instr.operand & 0x7];
 	uint32_t result = dst - src;
@@ -60,8 +64,10 @@ void rvm_cpu_exec_sub(rvm_cpu_t *cpu, rvm_instr_t instr)
 	cpu->regs.rv[instr.reg] = (uint16_t)result;
 }
 
-void rvm_cpu_exec_mul(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_mul(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint32_t result = 0;
 
 	if (instr.mode == RVM_MODE_IMM_OR_ADDR) {
@@ -88,8 +94,10 @@ void rvm_cpu_exec_mul(rvm_cpu_t *cpu, rvm_instr_t instr)
 	cpu->regs.rv[instr.reg] = (uint16_t)result;
 }
 
-void rvm_cpu_exec_div(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_div(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint32_t result = 0;
 
 	if (instr.mode == RVM_MODE_IMM_OR_ADDR) {
@@ -124,8 +132,10 @@ void rvm_cpu_exec_div(rvm_cpu_t *cpu, rvm_instr_t instr)
 	cpu->regs.rv[instr.reg] = (uint16_t)result;
 }
 
-void rvm_cpu_exec_mod(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_mod(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint32_t result = 0;
 
 	if (instr.mode == RVM_MODE_IMM_OR_ADDR) {
@@ -160,8 +170,10 @@ void rvm_cpu_exec_mod(rvm_cpu_t *cpu, rvm_instr_t instr)
 	cpu->regs.rv[instr.reg] = (uint16_t)result;
 }
 
-void rvm_cpu_exec_shl(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_shl(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint16_t dst_value = cpu->regs.rv[instr.reg];
 	uint8_t shift = (instr.mode == RVM_MODE_IMM_OR_ADDR) ? (instr.operand & 0xF) : (cpu->regs.rv[instr.operand & 0x7] & 0xF);
 
@@ -197,8 +209,10 @@ void rvm_cpu_exec_shl(rvm_cpu_t *cpu, rvm_instr_t instr)
 	cpu->regs.rv[instr.reg] = (uint16_t)result;
 }
 
-void rvm_cpu_exec_shr(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_shr(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint16_t dst_value = cpu->regs.rv[instr.reg];
 	uint8_t shift = 0;
 	uint32_t result = 0;

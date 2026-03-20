@@ -1,7 +1,7 @@
 #include "rocketvm/cpu/cpu_mem.h"
 #include "rocketvm/cpu/cpu_internal.h"
 
-void rvm_cpu_exec_load(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_load(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
 	uint16_t addr = 0;
 
@@ -21,10 +21,10 @@ void rvm_cpu_exec_load(rvm_cpu_t *cpu, rvm_instr_t instr)
 		return;
 	}
 
-	cpu->regs.rv[instr.reg] = rvm_memory_read_uint16(&cpu->mem, addr);
+	cpu->regs.rv[instr.reg] = rvm_memory_read_uint16(mem, addr);
 }
 
-void rvm_cpu_exec_store(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_store(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
 	uint16_t addr = 0;
 
@@ -49,5 +49,5 @@ void rvm_cpu_exec_store(rvm_cpu_t *cpu, rvm_instr_t instr)
 	// 	return;
 	// }
 
-	rvm_memory_write_uint16(&cpu->mem, addr, cpu->regs.rv[instr.reg]);
+	rvm_memory_write_uint16(mem, addr, cpu->regs.rv[instr.reg]);
 }

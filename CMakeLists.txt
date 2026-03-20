@@ -7,6 +7,7 @@ project(ROCKETVM
 
 set(ROCKETVM_TARGET_NAME rocketvm)
 set(ROCKETASM_TARGET_NAME rocketasm)
+set(ROCKETRUN_TARGET_NAME rocketrun)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -89,3 +90,4 @@ include(FetchContent)
 
 add_subdirectory(${ROCKETVM_TARGET_NAME})
 add_subdirectory(${ROCKETASM_TARGET_NAME})
+add_subdirectory(${ROCKETRUN_TARGET_NAME})

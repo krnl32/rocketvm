@@ -1,8 +1,10 @@
 #include "rocketvm/cpu/cpu_ctrlf.h"
 #include "rocketvm/cpu/cpu_internal.h"
 
-void rvm_cpu_exec_cmp(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_cmp(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint16_t dst = cpu->regs.rv[instr.reg];
 	uint16_t src = (instr.mode == RVM_MODE_IMM_OR_ADDR) ? instr.operand : (cpu->regs.rv[instr.operand & 0x7]);
 	uint32_t result = dst - src;
@@ -29,8 +31,10 @@ void rvm_cpu_exec_cmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 	}
 }
 
-void rvm_cpu_exec_jmp(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_jmp(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	uint16_t addr;
 	rvm_instr_mode_t mode = (instr.raw >> 11) & 0x1;
 
@@ -56,21 +60,25 @@ void rvm_cpu_exec_jmp(rvm_cpu_t *cpu, rvm_instr_t instr)
 	cpu->regs.rip = addr;
 }
 
-void rvm_cpu_exec_jz(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_jz(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	if (RVM_CPU_FLAG_CHECK(cpu, RVM_CPU_FLAG_RZ)) {
-		rvm_cpu_exec_jmp(cpu, instr);
+		rvm_cpu_exec_jmp(cpu, mem, instr);
 	}
 }
 
-void rvm_cpu_exec_jnz(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_jnz(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
+	(void)mem;
+
 	if (!RVM_CPU_FLAG_CHECK(cpu, RVM_CPU_FLAG_RZ)) {
-		rvm_cpu_exec_jmp(cpu, instr);
+		rvm_cpu_exec_jmp(cpu, mem, instr);
 	}
 }
 
-void rvm_cpu_exec_call(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_call(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
 	uint16_t addr;
 	rvm_instr_mode_t mode = (instr.raw >> 11) & 0x1;
@@ -102,21 +110,21 @@ void rvm_cpu_exec_call(rvm_cpu_t *cpu, rvm_instr_t instr)
 
 	// Save Return Address
 	cpu->regs.rsp -= 2;
-	rvm_memory_write_uint16(&cpu->mem, cpu->regs.rsp, cpu->regs.rip);
+	rvm_memory_write_uint16(mem, cpu->regs.rsp, cpu->regs.rip);
 
 	cpu->regs.rip = addr;
 }
 
-void rvm_cpu_exec_ret(rvm_cpu_t *cpu, rvm_instr_t instr)
+void rvm_cpu_exec_ret(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
 	(void)instr;
 
-	if (cpu->regs.rsp >= RVM_MEMORY_STACK_END) {
+	if (cpu->regs.rsp > RVM_MEMORY_STACK_END - 1) {
 		cpu->halt = true;
 		return;
 	}
 
-	uint16_t addr = rvm_memory_read_uint16(&cpu->mem, cpu->regs.rsp);
+	uint16_t addr = rvm_memory_read_uint16(mem, cpu->regs.rsp);
 	cpu->regs.rsp += 2;
 
 	if (addr > RVM_MEMORY_SIZE - RVM_CPU_INSTRUCTION_SIZE) {
