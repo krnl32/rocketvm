@@ -264,7 +264,7 @@ JNZ  RVD		; jump if RZ == 0, MODE=1 -> long unconditional jump to RVD
 SUB RSP, 2			; make space
 STORE [RSP], RVS	; write value
 
-; POP
+; POP RVD
 LOAD RVD, [RSP]		; read value
 ADD RSP, 2			; move stack up
 ```

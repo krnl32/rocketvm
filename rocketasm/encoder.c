@@ -32,11 +32,11 @@ int rsm_resolve_label(const rsm_program_t *program, const rsm_operand_t *opr, si
 {
 	int addr = rsm_program_find_label_address(program, opr->value.label, opr->label_size);
 	if (addr < 0) {
-		rvm_info("undefined label: %*.s\n", opr->value.label, opr->label_size);
+		rvm_info("undefined label: %*.s\n", opr->label_size, opr->value.label);
 		return -1;
 	}
 
-	return addr - (int)instr_idx - 1;
+	return (addr - (int)instr_idx - 1) * 2;
 }
 
 int rsm_encode_instr(const rsm_program_t *program, const rsm_instr_t *instr, size_t instr_idx)

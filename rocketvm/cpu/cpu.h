@@ -30,11 +30,9 @@ typedef struct {
 
 typedef struct {
 	rvm_registers_t regs;
-	rvm_memory_t mem;
 	bool halt;
 } rvm_cpu_t;
 
-int rvm_cpu_init(rvm_cpu_t *cpu);
-int rvm_cpu_cycle(rvm_cpu_t *cpu);
+int rvm_cpu_cycle(rvm_cpu_t *cpu, rvm_memory_t *mem);
 
 #endif

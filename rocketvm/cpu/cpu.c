@@ -8,9 +8,7 @@
 #include "rocketvm/common/isa/encoder.h"
 #include "rocketvm/common/utility/logger.h"
 
-#include <string.h>
-
-typedef void (*rvm_cpu_op_handler_t)(rvm_cpu_t *, rvm_instr_t);
+typedef void (*rvm_cpu_op_handler_t)(rvm_cpu_t *, rvm_memory_t *, rvm_instr_t);
 
 static const rvm_cpu_op_handler_t rvm_op_handlers[RVM_CPU_OP_COUNT] = {
 	[RVM_OP_MOV]   = rvm_cpu_exec_mov,
@@ -34,28 +32,21 @@ static const rvm_cpu_op_handler_t rvm_op_handlers[RVM_CPU_OP_COUNT] = {
 	[RVM_OP_RET]  = rvm_cpu_exec_ret,
 };
 
-static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr);
+static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr);
 
-int rvm_cpu_init(rvm_cpu_t *cpu)
-{
-	memset(cpu, 0, sizeof(*cpu));
-	cpu->regs.rsp = RVM_MEMORY_STACK_END;
-	return 0;
-}
-
-int rvm_cpu_cycle(rvm_cpu_t *cpu)
+int rvm_cpu_cycle(rvm_cpu_t *cpu, rvm_memory_t *mem)
 {
 	if (cpu->halt) {
 		return 0;
 	}
 
 	uint16_t rip = cpu->regs.rip;
-	if (rip > RVM_MEMORY_PROGRAM_END - 1) {
+	if (rip > RVM_MEMORY_PROGRAM_END - 2) {
 		rvm_error("rvm_cpu_cycle RIP out of bounds: 0x%X", rip);
 		return -1;
 	}
 
-	uint16_t instr_bin = rvm_memory_read_uint16(&cpu->mem, rip);
+	uint16_t instr_bin = rvm_memory_read_uint16(mem, rip);
 	rvm_debug("EXECUTING: 0x%04X at RIP: 0x%03X", instr_bin, cpu->regs.rip);
 
 	rvm_instr_t instr = rvm_decode(instr_bin);
@@ -64,7 +55,7 @@ int rvm_cpu_cycle(rvm_cpu_t *cpu)
 
 	cpu->regs.rip += RVM_CPU_INSTRUCTION_SIZE;
 
-	if (rvm_cpu_execute(cpu, instr) == -1) {
+	if (rvm_cpu_execute(cpu, mem, instr) == -1) {
 		rvm_error("rvm_cpu_execute failed");
 		return -1;
 	}
@@ -72,7 +63,7 @@ int rvm_cpu_cycle(rvm_cpu_t *cpu)
 	return 0;
 }
 
-static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr)
+static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_memory_t *mem, rvm_instr_t instr)
 {
 	if (instr.opcode >= RVM_CPU_OP_COUNT) {
 		rvm_cpu_fault(cpu, "Opcode out of range", (uint16_t)instr.opcode);
@@ -85,6 +76,6 @@ static int rvm_cpu_execute(rvm_cpu_t *cpu, rvm_instr_t instr)
 		return -1;
 	}
 
-	handler(cpu, instr);
+	handler(cpu, mem, instr);
 	return 0;
 }
